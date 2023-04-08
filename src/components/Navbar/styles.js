@@ -4,6 +4,7 @@ const drawerWidth = 0;
 
 export default makeStyles((theme) => ({
     appBar: {
+        zIndex: '1',
         boxShadow: 'none',
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
         [theme.breakpoints.up('sm')]: {
@@ -12,25 +13,30 @@ export default makeStyles((theme) => ({
         },
     },
     title: {
+        zIndex: '1',
         flexGrow: 1,
         alignItems: 'center',
         display: 'flex',
         textDecoration: 'none',
     },
     image: {
+        zIndex: '1',
         marginRight: '10px',
         verticalAlign: 'sub',
     },
     menuButton: {
+        zIndex: '1',
         marginRight: theme.spacing(2),
         [theme.breakpoints.up('sm')]: {
             display: 'none',
         },
     },
     grow: {
+        zIndex: '1',
         flexGrow: 1,
     },
     search: {
+        zIndex: '1',
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
         backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -45,6 +51,7 @@ export default makeStyles((theme) => ({
         },
     },
     searchIcon: {
+        zIndex: '1',
         padding: theme.spacing(0, 2),
         height: '100%',
         position: 'absolute',
@@ -54,11 +61,12 @@ export default makeStyles((theme) => ({
         justifyContent: 'center',
     },
     inputRoot: {
+        zIndex: '1',
         color: 'inherit',
     },
     inputInput: {
+        zIndex: '1',
         padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
         transition: theme.transitions.create('width'),
         width: '100%',
