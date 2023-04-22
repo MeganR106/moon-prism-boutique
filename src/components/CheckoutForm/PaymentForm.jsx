@@ -5,11 +5,9 @@ import { loadStripe } from '@stripe/stripe-js';
 
 import Review from './Review';
 
-const apiKey = `${process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY}`;
-console.log(apiKey);
-const stripePromise = loadStripe(apiKey);
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
-const PaymentForm = ({ timeout, checkoutToken, nextStep, backStep, shippingData, onCaptureCheckout }) => {
+const PaymentForm = ({ checkoutToken, nextStep, backStep, shippingData, onCaptureCheckout, timeout }) => {
     const handleSubmit = async (event, elements, stripe) => {
         event.preventDefault();
 
@@ -22,9 +20,10 @@ const PaymentForm = ({ timeout, checkoutToken, nextStep, backStep, shippingData,
         if (error) {
             console.log('[error]', error);
         } else {
-            const lineItems = checkoutToken.live && checkoutToken.live.line_items;
             const orderData = {
-                line_items: lineItems, shipping: { name: 'Primary', street: shippingData.address1, town_city: shippingData.city, county_state: shippingData.shippingSubdivision, postal_zip_code: shippingData.zip, country: shippingData.shippingCountry },
+                line_items: checkoutToken.line_items,
+                customer: { firstname: shippingData.firstName, lastname: shippingData.lastName, email: shippingData.email },
+                shipping: { name: 'International', street: shippingData.address1, town_city: shippingData.city, county_state: shippingData.shippingSubdivision, postal_zip_code: shippingData.zip, country: shippingData.shippingCountry },
                 fulfillment: { shipping_method: shippingData.shippingOption },
                 payment: {
                     gateway: 'stripe',
@@ -55,7 +54,7 @@ const PaymentForm = ({ timeout, checkoutToken, nextStep, backStep, shippingData,
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Button variant="outlined" onClick={backStep}>Back</Button>
                             <Button type="submit" variant="contained" disabled={!stripe} color="primary">
-                                Pay {checkoutToken?.live?.subtotal?.formatted_with_symbol}
+                                Pay {checkoutToken.subtotal.formatted_with_symbol}
                             </Button>
                         </div>
                     </form>

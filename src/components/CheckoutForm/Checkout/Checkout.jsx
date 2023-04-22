@@ -9,7 +9,7 @@ import useStyles from './styles';
 
 const steps = ['Shipping address', 'Payment details'];
 
-const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
+const Checkout = ({ cart, onCaptureCheckout, order, error, onEmptyCart }) => {
     const [checkoutToken, setCheckoutToken] = useState(null);
     const [activeStep, setActiveStep] = useState(0);
     const [shippingData, setShippingData] = useState({});
@@ -17,7 +17,10 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
     const classes = useStyles();
     const history = useNavigate();
 
-    const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    const nextStep = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        onEmptyCart(); // Call onEmptyCart function to empty the cart
+    };
     const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
 
     useEffect(() => {
@@ -33,6 +36,7 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
             };
 
             generateToken();
+            console.log(checkoutToken)
         }
     }, [cart]);
 
@@ -44,11 +48,11 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
 
     const timeout = () => {
         setTimeout(() => {
-            setIsFinished(true);
+            setIsFinished(true)
         }, 3000);
     }
 
-    let Confirmation = () => order.customer ? (
+    let Confirmation = () => (order.customer ? (
         <>
             <div>
                 <Typography variant="h5">Thank you for your purchase, {order.customer.firstname} {order.customer.lastname}!</Typography>
@@ -65,27 +69,27 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
                 <Divider className={classes.divider} />
             </div>
             <br />
-            <Button component={Link} variant="outlined" type="button" to="/">Back to home</Button>
+            <Button component={Link} variant="outlined" type="button" to="/" onClick={onEmptyCart}>Back to home</Button>
         </>
     ) : (
         <div className={classes.spinner}>
             <CircularProgress />
         </div>
-    );
+    ));
 
-    if (error) {
-        Confirmation = () => (
-            <>
-                <Typography variant="h5">Error: {error}</Typography>
-                <br />
-                <Button component={Link} variant="outlined" type="button" to="/">Back to home</Button>
-            </>
-        );
-    }
+    // if (error) {
+    //     Confirmation = () => (
+    //         <>
+    //             <Typography variant="h5">Error: {error}</Typography>
+    //             <br />
+    //             <Button component={Link} variant="outlined" type="button" to="/">Back to home</Button>
+    //         </>
+    //     );
+    // }
 
     const Form = () => (activeStep === 0
         ? <AddressForm checkoutToken={checkoutToken} nextStep={nextStep} setShippingData={setShippingData} test={test} />
-        : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} timeout={timeout} />);
+        : <PaymentForm checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} shippingData={shippingData} onCaptureCheckout={onCaptureCheckout} timeout={timeout} onEmptyCart={onEmptyCart} />);
 
     return (
         <>
@@ -95,18 +99,17 @@ const Checkout = ({ cart, onCaptureCheckout, order, error }) => {
                 <Paper className={classes.paper}>
                     <Typography variant="h4" align="center">Checkout</Typography>
                     <Stepper activeStep={activeStep} className={classes.stepper}>
-                        {steps.map((step) => (
-                            <Step key={step}>
-                                <StepLabel>{step}</StepLabel>
+                        {steps.map((label) => (
+                            <Step key={label}>
+                                <StepLabel>{label}</StepLabel>
                             </Step>
                         ))}
                     </Stepper>
-                    {activeStep === steps.length ? <Confirmation order={order} /> :
-                        checkoutToken && <Form />}
+                    {activeStep === steps.length ? <Confirmation /> : checkoutToken && <Form />}
                 </Paper>
             </main>
         </>
-    )
-}
+    );
+};
 
-export default Checkout
+export default Checkout;
